@@ -99,12 +99,21 @@ public class readCSV {
 		  //System.out.println(locs.get(leftBoundaryIndex).getAddress());
 		  //System.out.println(locs.get(rightBoundaryIndex).getAddress());
 		  //System.out.println(rightBoundaryIndex);
-		  
 		  List<Location> nearestlocs = new ArrayList<Location>();
 		  
-		  for(int i = leftBoundaryIndex; i <= rightBoundaryIndex; i++)
-			  nearestlocs.add(locs.get(i));
+		  nearestlocs.add(locs.get(leftBoundaryIndex)); 
+		  nearestlocs.add(locs.get(rightBoundaryIndex));
 		  
+		  while(leftBoundaryIndex < rightBoundaryIndex){
+			  index = binarySearch(locs,leftBoundaryIndex + 1, rightBoundaryIndex, miles,addr);
+			  if(index == -1)
+				  break;
+			  else{
+				  nearestlocs.add(locs.get(index));
+				  leftBoundaryIndex = index;
+			  }
+		  }
+		  		  
 		  return nearestlocs;
 		  
 	  }
@@ -173,17 +182,10 @@ public class readCSV {
 		}
 		nearestlocs = nearestLocs(nearestStarbucks,miles,addr);
 		
-		List <Location> finalLocs = new ArrayList<Location>();
-		
-		for(Location loc: nearestlocs) {
-			double dist = Location.calcDist(addr, loc);
-			if(dist < miles)
-				finalLocs.add(loc);
-		}
 		
 		//System.out.println("Done");
-		Collections.sort(finalLocs, new Location());
-	    Collections.sort(finalLocs, new Comparator<Location>() {
+		Collections.sort(nearestlocs, new Location());
+	    Collections.sort(nearestlocs, new Comparator<Location>() {
 	        public int compare(Location l1, Location l2) {
 	        	double dis = (Location.calcDist(addr, l2) - Location.calcDist(addr, l1)); 
 	        	if (dis == 0.0)
@@ -196,7 +198,7 @@ public class readCSV {
 
 	    });
 
-		for(Location loc: finalLocs) {
+		for(Location loc: nearestlocs) {
 			System.out.println(loc.getAddress());
 		}
 		return nearestStarbucks;
